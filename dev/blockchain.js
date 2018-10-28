@@ -83,7 +83,7 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
     while(hash.substring(0,4) != '0000') {
         nonce++;
         hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
-        // log each hash and only the last one will be with 0000. 
+        // Testing only:log each hash and only the last one will be with 0000. 
         //console.log(hash+ '\n');
 
     }
