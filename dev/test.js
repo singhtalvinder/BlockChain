@@ -3,7 +3,11 @@ const Blockchain = require('./blockchain'); // extension .js not needed as file 
 
 const bitcoin = new Blockchain();
 
+// To test the creation of genesis block.
+console.log("The Genesis block !!\n");
+console.log(bitcoin);
 
+/*
 const previousBlockHash = 'OUIOBVNYU5675CBVCVB43543';
  
 // array of all the transcations present in the block.
@@ -24,12 +28,16 @@ const currentBlockData = [
         recipient: '67676567JFDGKJF0934DG8989LFDFH068K',
     },
 ];
-
-console.log(bitcoin.proofOfWork(previousBlockHash, currentBlockData));
+*/
+//console.log(bitcoin.proofOfWork(previousBlockHash, currentBlockData));
 
 // Hash the block.
 //const nonce = 100;
-//console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData,nonce));
+// Now since we tested the proofofwork in above call. Lets use the same 
+// nonce value to see if we get the same hash or not.
+// On executing we found that the hash is same. 
+// This ensures its working fine.
+//console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData,220957));
 
 /*
 bitcoin.createNewBlock(2389, 'OI66685544320N', '903489FDFD34');

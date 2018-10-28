@@ -1,11 +1,18 @@
 const sha256 = require('sha256');
 
+// Next update: Lets add a genesis block. The first block
+// in blockchain.
+// Should happen as soon as it creates blockchain.
+
+
 // Can also be done in class. Ideally classes are sugar coating
 //  over constructor functions.
 // Create constructor funtion to build a Blockchain
 function Blockchain() {
     this.chain = []; //store mined blocks.
     this.pendingTransactions = []; // store new blocks before mining.ie pending transcs.
+    //This is first so we don't have any parameters. so pass arbitrary params.
+    this.createNewBlock(100,'0','0'); // Only once.
 }
 
 // create new block.
@@ -58,7 +65,6 @@ Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, n
     return hash;
 }
 
-
 // Proof of Work!! 
 // Generate hash- starting with 0000 in the begining so that hashing is not that
 // random and takes some time to generate.
@@ -77,6 +83,9 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
     while(hash.substring(0,4) != '0000') {
         nonce++;
         hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+        // log each hash and only the last one will be with 0000. 
+        //console.log(hash+ '\n');
+
     }
 
     // return nonce value that was used to generate hash 
@@ -84,8 +93,6 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
     return nonce; 
 }
 
-
 // Export constructor function, to acess in other .js files.
-
 module.exports = Blockchain;
 
