@@ -1,5 +1,7 @@
 const sha256 = require('sha256');
-
+// using the 4-th parameter from the package.json file 
+// under "Node_XX" parameters.
+const currentNodeUrl = process.argv[3];
 // Next update: Lets add a genesis block. The first block
 // in blockchain.
 // Should happen as soon as it creates blockchain.
@@ -12,6 +14,10 @@ function Blockchain() {
     this.chain = []; //store mined blocks.
     this.pendingTransactions = []; // store new blocks before mining.ie pending transcs.
     //This is first so we don't have any parameters. so pass arbitrary params.
+    this.currentNodeUrl = currentNodeUrl;
+
+    // Each Blockchain to be aware of all other nodes in the blockchain n/w.
+    this.networkNodes = [];
     this.createNewBlock(100,'0','0'); // Only once.
 }
 
