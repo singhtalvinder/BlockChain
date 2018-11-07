@@ -282,6 +282,59 @@ app.post('/register-nodes-bulk', function(req, res) {
     res.json({note: 'Bulk nodes registration successfull'});
 });
 
+// Consensus on the network.
+app.get('/consensus', function(req, res)  {
+    const requestPromises = [];
+
+    bitcoin.networkNodes.forEach(networkNodeUrl => {
+        const requestOptions =  {
+            uri: networkNodeUrl + '/blockchain',
+            method: 'GET',
+            json: true
+        };
+        requestPromises.push(rp(requestOptions));
+    });
+    Promise.all(requestPromises)
+    .then(blockchains => {
+        //data that we receive after all promises are done...
+        // basically blockchains
+        const currentChainLength = bitcoin.chain.length;
+        let maxChainLength = currentChainLength;
+        let newLongestChain = null;
+        let newPendingTransactions = null;
+
+        // Check if there is any longer blockchain in the n/w than
+        // the copy of the blockchain hosted on current node.
+        blockchains.forEach(blockchain => {
+            if(blockchain.chain.length > maxChainLength) {
+                maxChainLength = blockchain.chain.length;
+                newLongestChain = blockchain.chain;
+
+                // also replace pending transactions on the blockchain.
+                newPendingTransactions = blockchain.pendingTransactions;
+            };
+        });
+
+        // Do not replace the chain if there is no longest chain in n/w or
+        // there exists one but is not valid.
+        if(!newLongestChain || 
+            (newLongestChain && !bitcoin.chainIsValid(newLongestChain))) {
+                res.json({
+                    note: 'Current Chain not been replaced !',
+                    chain: bitcoin.chain
+                });
+        } else {
+            // replace blockchain hosted on current node with the longest
+            // chain in n/w.
+            bitcoin.chain = newLongestChain;
+            bitcoin.pendingTransactions = newPendingTransactions;
+            res.json({
+                note: 'This chain has been replaced.',
+                chain: bitcoin.chain
+            });
+        }
+    });
+});
 
 // listen to port 3000 for single node operation only.
 // To run it over multiple nodes, we need this value of
