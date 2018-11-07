@@ -1,4 +1,5 @@
 const sha256 = require('sha256');
+const uuid = require('uuid/v1');
 // using the 4-th parameter from the package.json file 
 // under "Node_XX" parameters.
 const currentNodeUrl = process.argv[3];
@@ -6,23 +7,24 @@ const currentNodeUrl = process.argv[3];
 // in blockchain.
 // Should happen as soon as it creates blockchain.
 
-
 // Can also be done in class. Ideally classes are sugar coating
 //  over constructor functions.
 // Create constructor funtion to build a Blockchain
 function Blockchain() {
     this.chain = []; //store mined blocks.
     this.pendingTransactions = []; // store new blocks before mining.ie pending transcs.
+    
     //This is first so we don't have any parameters. so pass arbitrary params.
     this.currentNodeUrl = currentNodeUrl;
 
     // Each Blockchain to be aware of all other nodes in the blockchain n/w.
     this.networkNodes = [];
+
     this.createNewBlock(100,'0','0'); // Only once.
 }
 
 // create new block.
-Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
+Blockchain.prototype.createNewBlock = function(nonce, prevBlockHash, hash) {
     const newBlock = {
         // each block inside the blockchain.
         index: this.chain.length + 1,
@@ -30,10 +32,14 @@ Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
         transactions: this.pendingTransactions,
         nonce: nonce, // comes from proof of work in general.
         hash: hash, // Of current block. Basically a compressed string of various transactions.
-        previousblockHash: previousBlockHash
+        prevBlockHash: prevBlockHash
     };
-    this.pendingTransactions = []; // clear out all for this block.
-    this.chain.push(newBlock); // push newly created block to the chain.
+
+    // Clear out all for this block.
+    this.pendingTransactions = []; 
+    
+    // push newly created block to the chain.
+    this.chain.push(newBlock); 
 
     return newBlock;
 }
@@ -49,13 +55,22 @@ Blockchain.prototype.createNewTransaction = function(amount, sender, recepient) 
     const newTransaction = {
         amount: amount,
         sender: sender,
-        recepient: recepient
+        recepient: recepient,
+        transactionId: uuid().split('-').join('')
     };
 
+    return newTransaction;
+
     // push trasaction to the array of transactions.
-    this.pendingTransactions.push(newTransaction);
+    //this.pendingTransactions.push(newTransaction);
 
     // no of block this new is added to.
+    //return this.getLastBlock()['index'] + 1;
+}
+
+// Add a new transaction to the pending transactions.
+Blockchain.prototype.addTransactionToPendingTransaction = function(transactionObj) {
+    this.pendingTransactions.push(transactionObj);
     return this.getLastBlock()['index'] + 1;
 }
 
