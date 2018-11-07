@@ -114,6 +114,55 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
     return nonce; 
 }
 
+// Check if the blockchain is valid or not.
+Blockchain.prototype.chainIsValid = function(blockchain) {
+    let validChain = true;
+
+    // Iterate through all of the blocks in the blockchain
+    // and make sure all of the hashs line up correctly.
+    for(var i = 1; i < blockchain.length; i++) {
+        const currentBlock = blockchain[i];
+        const prevBlock = blockchain[i-1];
+
+        // current block hash.
+        const blockHash = this.hashBlock(
+            prevBlock['hash'], 
+            {transactions: currentBlock['transactions'], index: currentBlock['index']},
+            currentBlock['nonce']);
+
+        // Validate every block has correct data.
+        // rehash the current block (with leading 0000's).
+        if(blockHash.substring(0,4) !== '0000')
+            validChain = false;
+
+        // Chain is invalid if current block hash does not match 
+        // previous block hash.
+        if(currentBlock['prevBlockHash'] !== prevBlock['hash']){
+            validChain = false;
+        }
+        
+        // Output the block hashes to see the diference.
+        console.log('prevBlockHash=>', prevBlock['hash']);
+        console.log('currentBlockHash=>', currentBlock['hash']);
+    };
+
+    // Check genesis block
+    // Should match the data as specified in constructor fn:
+    // Like:this.createNewBlock(100,'0','0'); // Only once.
+    const genesisBlock = blockchain[0];
+    const correctNonce  = genesisBlock['nonce'] === 100;
+    const correctPrevBlockHash = genesisBlock['prevBlockHash'] === '0';
+    const correctHash = genesisBlock['hash'] === '0';
+    const correctTransactions = genesisBlock['transactions'].length === 0;
+
+    // if there is some invalid data, then set it to false.
+    if(!correctNonce || !correctPrevBlockHash ||
+        !correctHash || !correctTransactions) {
+        validChain = false;
+    }
+
+    return validChain;
+};
 // Export constructor function, to acess in other .js files.
 module.exports = Blockchain;
 
