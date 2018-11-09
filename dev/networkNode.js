@@ -336,6 +336,37 @@ app.get('/consensus', function(req, res)  {
     });
 });
 
+// Get the block for the given hash.
+app.get('/block/:blockHash', function(req, res) {
+    const blockHash = req.params.blockHash;
+    const correctBlock = bitcoin.getBlock(blockHash);
+    res.json({
+        block: correctBlock
+    });
+});
+
+// Get the transaction for a given transaction id.
+app.get('/transaction/:transactionId', function(req, res) {
+    const transactionId = req.params.transactionId;
+    const transactionData = bitcoin.getTransaction(transactionId);
+    res.json({
+        transaction: transactionData.transaction,
+        block: transactionData.block
+    });
+
+});
+
+
+// Get the Balance corresponding to a given address.
+app.get('/address/:address', function(req, res) {
+    const address = req.params.address;
+    const addressData = bitcoin.getAddressData(address);
+    res.json({
+        addressData: addressData,
+    });
+});
+
+
 // listen to port 3000 for single node operation only.
 // To run it over multiple nodes, we need this value of
 // port to be different for each node. 
